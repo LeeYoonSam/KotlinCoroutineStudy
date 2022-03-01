@@ -114,3 +114,47 @@ public suspend fun <T> withContext(
   즉, `withContext`가 호출된 원래 [coroutineContext]가 취소된 경우 디스패처가 코드를 실행하기 시작할 때 `withContext`의 결과를 버리고 [CancellationException]을 던집니다.
 - 위에서 설명한 취소 동작은 디스패처가 변경되는 경우에만 활성화됩니다.
 - 예를 들어 `withContext(NonCancellable) { ... }`를 사용할 때 디스패처에는 변경 사항이 없으며 이 호출은 `withContext` 내부의 블록에 들어갈 때나 블록에서 나갈 때 취소되지 않습니다.
+
+## launch
+
+매개변수:
+- context - 코루틴의 CoroutineScope.coroutineContext 컨텍스트에 추가됩니다.
+- start - 코루틴 시작 옵션. 기본값은 CoroutineStart.DEFAULT입니다.
+- block - 제공된 범위의 컨텍스트에서 호출될 코루틴 코드.
+
+```kotlin
+public fun CoroutineScope.launch(
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> Unit
+): Job {
+    val newContext = newCoroutineContext(context)
+    val coroutine = if (start.isLazy)
+        LazyStandaloneCoroutine(newContext, block) else
+        StandaloneCoroutine(newContext, active = true)
+    coroutine.start(start, coroutine, block)
+    return coroutine
+}
+```
+
+- 현재 스레드를 차단하지 않고 새 코루틴을 시작하고 코루틴에 대한 참조를 작업으로 반환합니다. 결과 작업이 취소되면 코루틴이 취소됩니다.
+- 코루틴 컨텍스트는 CoroutineScope에서 상속됩니다. 추가 컨텍스트 요소는 컨텍스트 인수로 지정할 수 있습니다. \
+  컨텍스트에 디스패처나 다른 ContinuationInterceptor가 없으면 Dispatchers.Default가 사용됩니다. \
+  상위 작업도 CoroutineScope에서 상속되지만 해당 컨텍스트 요소로 재정의될 수도 있습니다.
+- 기본적으로 코루틴은 즉시 실행되도록 예약됩니다. 다른 시작 옵션은 시작 매개변수를 통해 지정할 수 있습니다. \
+  자세한 내용은 CoroutineStart를 참조하세요.
+- 선택적 시작 매개변수를 CoroutineStart.LAZY로 설정하여 코루틴을 느리게 시작할 수 있습니다. \
+  이 경우 코루틴 Job은 새로운 상태로 생성됩니다. \
+  시작 기능으로 명시적으로 시작할 수 있으며 조인의 첫 번째 호출에서 암시적으로 시작됩니다.
+- 이 코루틴의 잡히지 않은 예외는 기본적으로 컨텍스트의 상위 작업을 취소합니다(CoroutineExceptionHandler가 명시적으로 지정되지 않은 경우). \
+  이는 시작이 다른 코루틴의 컨텍스트와 함께 사용될 때 포착되지 않은 예외가 상위 코루틴의 취소로 이어진다는 것을 의미합니다.
+- 새로 생성된 코루틴에 사용할 수 있는 디버깅 기능에 대한 설명은 newCoroutineContext를 참조하세요.
+
+### CoroutineStart
+> 코루틴 빌더를 위한 시작 옵션을 정의합니다. 시작, 비동기 및 기타 코루틴 빌더 기능의 시작 매개변수에 사용됩니다.
+
+코루틴 시작 옵션의 요약은 다음과 같습니다.
+- `DEFAULT` - 컨텍스트에 따라 실행할 코루틴을 즉시 예약합니다.
+- `LAZY` - 필요할 때만 코루틴을 느리게 시작합니다.
+- `ATOMIC` - 원자적으로(취소 불가능한 방식으로) 컨텍스트에 따라 실행을 위해 코루틴을 예약합니다.
+- `UNDISPATCHED` - 현재 스레드의 첫 번째 중단 지점까지 코루틴을 즉시 실행합니다.
