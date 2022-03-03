@@ -68,3 +68,101 @@ public fun cancel(cause: CancellationException? = null)
 - 원인은 오류 메시지를 지정하거나 디버깅 목적으로 취소 이유에 대한 기타 세부 정보를 제공하는 데 사용할 수 있습니다.
 - `cancellation machinery`에 대한 전체 설명은 작업 문서를 참조하십시오.
 
+## NonCancellable
+항상 활성 상태인 취소할 수 없는 작업입니다.
+
+취소 없이 실행되어야 하는 코드 블록의 취소를 방지하는 withContext 함수를 위해 설계되었습니다.
+
+다음과 같이 사용하십시오.
+
+```kotlin
+withContext(NonCancellable) {
+    // this code will not be cancelled
+}
+```
+
+### 경고
+이 개체는 시작, 비동기 및 기타 코루틴 빌더와 함께 사용하도록 설계되지 않았습니다.
+`launch(NonCancellable) { ... }` 를 쓰면 부모가 취소될 때 새로 시작된 작업이 취소되지 않을 뿐만 아니라 부모와 자식 간의 전체 부모-자식 관계가 끊어집니다.
+부모는 자녀가 완료될 때까지 기다리지 않으며 자녀가 충돌했을 때 취소되지도 않습니다.
+
+## GlobalScope
+
+```kotlin
+@DelicateCoroutinesApi
+public object GlobalScope : CoroutineScope {
+    /**
+    * Returns [EmptyCoroutineContext].
+    */
+    override val coroutineContext: CoroutineContext
+    get() = EmptyCoroutineContext
+}
+```
+
+작업에 바인딩되지 않은 전역 CoroutineScope입니다. 전역 범위는 전체 애플리케이션 수명 동안 작동하고 조기에 취소되지 않는 최상위 코루틴을 시작하는 데 사용됩니다.
+GlobalScope에서 시작된 활성 코루틴은 프로세스를 활성 상태로 유지하지 않습니다. 그들은 데몬 스레드와 같습니다.
+
+이것은 섬세한 API입니다. GlobalScope를 사용할 때 실수로 리소스 또는 메모리 누수가 발생하기 쉽습니다. \
+  GlobalScope에서 시작된 코루틴은 구조적 동시성의 원칙을 따르지 않으므로 문제(예: 느린 네트워크로 인해)로 인해 중단되거나 지연되는 경우 계속 작동하고 리소스를 소비합니다.
+
+```kotlin
+fun loadConfiguration() {
+    GlobalScope.launch {
+        val config = fetchConfigFromServer() // network request
+        updateConfiguration(config)
+    }
+}
+```
+
+- `loadConfiguration`을 호출하면 취소하거나 완료될 때까지 기다리지 않고 백그라운드에서 작동하는 코루틴이 GlobalScope에 생성됩니다.
+- 네트워크가 느리면 백그라운드에서 계속 대기하여 리소스를 소모합니다.
+- loadConfiguration에 대한 반복적인 호출은 점점 더 많은 리소스를 소모합니다.
+
+### 가능한 교체
+많은 경우 GlobalScope 사용은 제거되어야 하며 포함 작업을 일시 중단으로 표시해야 합니다.
+
+```kotlin
+suspend fun loadConfiguration() {
+    val config = fetchConfigFromServer() // network request
+    updateConfiguration(config)
+}
+```
+
+<br/>
+
+GlobalScope.launch가 여러 동시 작업을 시작하는 데 사용된 경우 해당 작업은 대신 coroutineScope와 함께 그룹화됩니다.
+
+```kotlin
+// 구성 및 데이터를 동시에 로드
+suspend fun loadConfigurationAndData() {
+    coroutinesScope {
+        launch { loadConfiguration() }
+        launch { loadData() }
+    }
+}
+```
+
+- 최상위 코드에서 일시 중단되지 않은 컨텍스트에서 동시 작업 작업을 시작할 때 GlobalScope 대신 적절하게 제한된 CoroutineScope 인스턴스를 사용해야 합니다. \
+  자세한 내용은 CoroutineScope 문서를 참조하세요.
+
+### GlobalScope vs custom scope
+GlobalScope.launch { ... }를 CoroutineScope().launch { ... } 생성자 함수 호출로 바꾸지 마십시오. \
+  후자는 GlobalScope와 동일한 함정이 있습니다.
+
+CoroutineScope() 생성자 함수의 의도된 사용법에 대한 CoroutineScope 문서를 참조하십시오.
+
+
+### 합법적인 사용 사례
+응용 프로그램의 전체 기간 동안 활성 상태를 유지해야 하는 최상위 백그라운드 프로세스와 같이 GlobalScope를 합법적이고 안전하게 사용할 수 있는 제한된 상황이 있습니다.
+이 때문에 GlobalScope를 사용하려면 다음과 같이 @OptIn(DelicateCoroutinesApi::class)과 함께 명시적 옵트인이 필요합니다.
+
+```kotlin
+// 1초마다 통계를 기록하는 전역 코루틴은 항상 활성 상태여야 합니다.
+@OptIn(DelicateCoroutinesApi::class)
+val globalScopeReporter = GlobalScope.launch {
+    while (true) {
+        delay(1000)
+        logStatistics()
+    }
+}
+```
