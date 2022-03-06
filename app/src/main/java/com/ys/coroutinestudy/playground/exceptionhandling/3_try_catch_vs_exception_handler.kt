@@ -1,5 +1,6 @@
 package com.ys.coroutinestudy.playground.exceptionhandling
 
+import com.ys.coroutinestudy.util.logWithThreadName
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -9,8 +10,9 @@ import kotlinx.coroutines.launch
 fun main() {
 
 	val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
-		println("Caught exception: $throwable coroutineContext: $coroutineContext")
-		println(Thread.currentThread().name)
+		logWithThreadName {
+			println("Caught exception: $throwable coroutineContext: $coroutineContext")
+		}
 	}
 
 	val scope = CoroutineScope(Job())
