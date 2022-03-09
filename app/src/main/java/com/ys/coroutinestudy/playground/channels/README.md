@@ -28,3 +28,33 @@ public fun <E> CoroutineScope.produce(
 ): ReceiveChannel<E> =
     produce(context, capacity, BufferOverflow.SUSPEND, CoroutineStart.DEFAULT, onCompletion = null, block = block)
 ```
+
+
+## Channel - trySend
+
+```kotlin
+// Channel.kt
+public fun trySend(element: E): ChannelResult<Unit>
+```
+
+- 용량 제한을 위반하지 않는 경우 지정된 요소를 이 채널에 즉시 추가하고 성공적인 결과를 반환합니다. \
+  그렇지 않으면 실패하거나 닫힌 결과를 반환합니다. \
+  이것은 send가 일시 중단되거나 throw되는 상황에서 백오프하는 send의 동기 변형입니다.
+- trySend 호출이 성공하지 못한 결과를 반환하면 요소가 소비자에게 전달되지 않았음을 보장하고 이 채널에 대해 설치된 onUndeliveredElement를 호출하지 않습니다. \
+  전달되지 않은 요소를 처리하는 방법에 대한 자세한 내용은 채널 문서의 "전달되지 않은 요소" 섹션을 참조하세요.
+
+## Channel - send
+
+```kotlin
+public suspend fun send(element: E)
+```
+
+- 지정된 요소를 이 채널로 전송하고, 이 채널의 버퍼가 가득 차거나 존재하지 않는 경우 호출자를 일시 중단하거나, \
+  전송을 위해 채널이 닫힌 경우 예외를 throw합니다(자세한 내용은 닫기 참조).
+- 채널을 닫는 것은 개념적으로 이 채널을 통해 특별한 "닫기 토큰"을 보내는 것과 같기 때문에 이 기능이 일시 중단된 후 채널을 닫는다고 이 일시 중단된 보내기 호출이 중단되지 않습니다. \
+  채널을 통해 전송된 모든 요소는 선입선출 순서로 전달됩니다. 보낸 요소는 닫기 토큰 전에 수신자에게 전달됩니다.
+- 이 일시 중지 기능은 취소할 수 있습니다. \
+  이 함수가 일시 중단된 동안 현재 코루틴의 작업이 취소되거나 완료되면 이 함수는 CancellationException과 함께 즉시 재개됩니다. \
+  신속한 취소 보장이 있습니다. 이 기능이 일시 중단된 동안 작업이 취소된 경우 성공적으로 재개되지 않습니다. \
+  보내기 호출은 요소를 채널로 보낼 수 있지만 그런 다음 CancellationException을 throw하므로 예외가 요소 전달 실패로 처리되어서는 안 됩니다. \
+  전달되지 않은 요소를 처리하는 방법에 대한 자세한 내용은 채널 문서의 "전달되지 않은 요소" 섹션을 참조하세요.
