@@ -1,4 +1,21 @@
 # Channels
+- 채널은 송신자(SendChannel을 통해)와 수신자(ReceiveChannel을 통해) 간의 통신을 위한 비차단 프리미티브입니다.
+- 개념적으로 채널은 Java의 BlockingQueue와 유사하지만 차단 작업 대신 일시 중단 작업이 있으며 닫힐 수 있습니다.
+
+## 채널 만들기
+
+> Channel(capacity) 팩토리 함수는 용량 정수 값에 따라 다른 종류의 채널을 생성하는 데 사용됩니다.
+
+- 용량(capacity)이 0일 때 — 랑데뷰 채널을 생성합니다. 이 채널에는 버퍼가 전혀 없습니다. \
+  요소는 송신 및 수신 호출이 정시에 만날 때만(랑데부) 송신자에서 수신자로 전송되므로 다른 코루틴이 수신을 호출할 때까지 송신이 일시 중단되고 다른 코루틴이 송신을 호출할 때까지 수신이 일시 중단됩니다.
+- 용량(capacity)이 Channel.UNLIMITED인 경우 — 버퍼가 사실상 무제한인 채널을 생성합니다. \
+  이 채널에는 무제한 용량의 연결 목록 버퍼가 있습니다(사용 가능한 메모리에 의해서만 제한됨). 이 채널로 보내는 것은 일시 중단되지 않으며 trySend는 항상 성공합니다.
+- 용량(capacity)이 Channel.CONFLATED일 때 — 병합된 채널을 생성합니다. \
+  이 채널은 최대 하나의 요소를 버퍼링하고 모든 후속 send 및 trySend 호출을 병합하므로 수신자는 항상 마지막 요소가 전송되도록 합니다. \
+  연속 전송된 요소는 병합됩니다 — 마지막으로 전송된 요소만 수신되고 이전에 전송된 요소는 손실됩니다. \
+  이 채널로 보내는 것은 일시 중단되지 않으며 trySend는 항상 성공합니다.
+- 용량(capacity)이 양수이지만 UNLIMITED보다 작으면 지정된 용량으로 어레이 기반 채널을 생성합니다. \
+  이 채널에는 고정 용량의 어레이 버퍼가 있습니다. 버퍼가 가득 찼을 때만 송신이 일시 중단되고 버퍼가 비어 있을 때만 수신이 일시 중단됩니다.
 
 ## CoroutineScope.produce
 - 새 코루틴을 시작하여 값 스트림을 채널로 보내고 코루틴에 대한 참조를 ReceiveChannel로 반환합니다. \
@@ -58,3 +75,49 @@ public suspend fun send(element: E)
   신속한 취소 보장이 있습니다. 이 기능이 일시 중단된 동안 작업이 취소된 경우 성공적으로 재개되지 않습니다. \
   보내기 호출은 요소를 채널로 보낼 수 있지만 그런 다음 CancellationException을 throw하므로 예외가 요소 전달 실패로 처리되어서는 안 됩니다. \
   전달되지 않은 요소를 처리하는 방법에 대한 자세한 내용은 채널 문서의 "전달되지 않은 요소" 섹션을 참조하세요.
+
+## Channel<Int>(Channel.BUFFERED)
+- 지정된 버퍼 용량으로(또는 기본적으로 버퍼 없이) 채널을 만듭니다. 자세한 내용은 채널 인터페이스 설명서를 참조하십시오.
+
+매개변수
+capacity - 양의 채널 용량 또는 Channel.Factory에 정의된 상수 중 하나입니다.
+onBufferOverflow - 버퍼 오버플로에 대한 작업을 구성합니다(선택 사항, 기본값은 값을 보내기 위한 일시 중단 시도로, \
+  용량 >= 0 또는 용량 == Channel.BUFFERED인 경우에만 지원됨, 암시적으로 하나 이상의 버퍼링된 요소가 있는 채널을 생성함).
+onUndeliveredElement - 요소가 전송되었지만 소비자에게 전달되지 않았을 때 호출되는 선택적 함수입니다. \
+  채널 문서의 "전달되지 않은 요소" 섹션을 참조하세요.
+
+```kotlin
+public fun <E> Channel(
+    capacity: Int = RENDEZVOUS,
+    onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND,
+    onUndeliveredElement: ((E) -> Unit)? = null
+): Channel<E> =
+    when (capacity) {
+        RENDEZVOUS -> {
+            if (onBufferOverflow == BufferOverflow.SUSPEND)
+                RendezvousChannel(onUndeliveredElement) // an efficient implementation of rendezvous channel
+            else
+                ArrayChannel(1, onBufferOverflow, onUndeliveredElement) // support buffer overflow with buffered channel
+        }
+        CONFLATED -> {
+            require(onBufferOverflow == BufferOverflow.SUSPEND) {
+                "CONFLATED capacity cannot be used with non-default onBufferOverflow"
+            }
+            ConflatedChannel(onUndeliveredElement)
+        }
+        UNLIMITED -> LinkedListChannel(onUndeliveredElement) // ignores onBufferOverflow: it has buffer, but it never overflows
+        BUFFERED -> ArrayChannel( // uses default capacity with SUSPEND
+            if (onBufferOverflow == BufferOverflow.SUSPEND) CHANNEL_DEFAULT_CAPACITY else 1,
+            onBufferOverflow, onUndeliveredElement
+        )
+        else -> {
+            if (capacity == 1 && onBufferOverflow == BufferOverflow.DROP_OLDEST)
+                ConflatedChannel(onUndeliveredElement) // conflated implementation is more efficient but appears to work in the same way
+            else
+                ArrayChannel(capacity, onBufferOverflow, onUndeliveredElement)
+        }
+    }
+```
+
+- 지정된 버퍼 용량으로(또는 기본적으로 버퍼 없이) 채널을 만듭니다.
+- 자세한 내용은 채널 인터페이스 설명서를 참조하십시오.
