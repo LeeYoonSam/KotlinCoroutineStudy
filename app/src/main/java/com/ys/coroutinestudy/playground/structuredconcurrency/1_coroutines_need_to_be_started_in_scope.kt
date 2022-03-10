@@ -1,6 +1,6 @@
 package com.ys.coroutinestudy.playground.structuredconcurrency
 
-import com.ys.coroutinestudy.util.logWithThreadName
+import com.ys.coroutinestudy.util.log
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,15 +14,13 @@ val scope = CoroutineScope(Dispatchers.Default)
 fun main() = runBlocking {
 	val job = scope.launch {
 		delay(100)
-		println("Coroutine completed")
+		log("Coroutine completed")
 	}
 
 	job.invokeOnCompletion { throwable ->
 		println(throwable)
 		if (throwable is CancellationException) {
-			logWithThreadName {
-				println("Coroutine was cancelled")
-			}
+			log("Coroutine was cancelled")
 		}
 	}
 
@@ -33,8 +31,6 @@ fun main() = runBlocking {
 }
 
 fun onDestroy() {
-	logWithThreadName {
-		println("life-time of scope ends")
-	}
+	log("life-time of scope ends")
 	scope.cancel()
 }
