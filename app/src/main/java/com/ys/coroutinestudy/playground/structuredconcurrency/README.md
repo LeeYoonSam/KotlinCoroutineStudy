@@ -41,3 +41,18 @@ public fun CoroutineScope.cancel(cause: CancellationException? = null) {
     job.cancel(cause)
 }
 ```
+
+## Job.children
+
+```kotlin
+public val children: Sequence<Job>
+```
+
+- 이 Job의 자식 시퀀스를 반환합니다. Job은 이 Job으로 구성될 때 이 Job의 자식이 됩니다. [CoroutineContext] 또는 명시적 '상위' 매개변수 사용.
+- 부모-자식 관계는 다음과 같은 효과가 있습니다.
+    - [cancel] 또는 예외적인 완료(실패)로 부모를 취소하면 모든 자식이 즉시 취소됩니다.
+    - 부모는 모든 자식이 완료될 때까지 완료할 수 없습니다. 부모는 모든 자식이 _completing_ 또는 _cancelling_ 상태에서 완료될 때까지 기다립니다.
+    - 자식의 잡히지 않은 예외는 기본적으로 부모를 취소합니다. \
+  이는 [async][CoroutineScope.async] 및 기타 미래형 코루틴 빌더로 생성된 하위 항목에도 적용됩니다. \
+  예외가 포착되어 결과에 캡슐화되더라도 마찬가지입니다. \
+  이 기본 동작은 [SupervisorJob]으로 재정의할 수 있습니다.
