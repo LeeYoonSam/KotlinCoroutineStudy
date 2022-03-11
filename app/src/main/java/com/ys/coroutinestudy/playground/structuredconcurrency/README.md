@@ -73,3 +73,47 @@ public suspend fun Job.cancelAndJoin() {
     return join()
 }
 ```
+
+## SupervisorJob
+- 활성 상태의 SupervisorJob 개체를 만듭니다. 수퍼바이저 작업의 하위 항목은 서로 독립적으로 실패할 수 있습니다.
+- 1차 하위 구성요소의 실패 또는 취소는 SupervisorJob의 실패를 유발하지 않으며 다른 1차 하위 구성요소에 영향을 미치지 않으므로 감독자는 하위의 실패를 처리하기 위한 사용자 정의 정책을 구현할 수 있습니다.
+- 실행을 사용하여 생성된 자식 작업의 실패는 컨텍스트에서 CoroutineExceptionHandler를 통해 처리할 수 있습니다.
+- 비동기를 사용하여 생성된 자식 작업의 실패는 지연된 결과 값에서 Deferred.await를 통해 처리할 수 있습니다.
+- 상위 작업이 지정된 경우 이 SupervisorJob은 상위의 하위 작업이 되고 상위 작업이 실패하거나 취소되면 취소됩니다. \
+  이 경우 이 감독자의 자식도 모두 취소됩니다. 이 SupervisorJob에 대해 취소 예외(CancellationException 제외)를 호출하면 상위 작업도 취소됩니다.
+
+매개변수:
+- parent - 선택적 상위 작업.
+
+```kotlin
+@Suppress("FunctionName")
+public fun SupervisorJob(parent: Job? = null) : CompletableJob = SupervisorJobImpl(parent)
+```
+
+
+```kotlin
+private class SupervisorJobImpl(parent: Job?) : JobImpl(parent) {
+    override fun childCancelled(cause: Throwable): Boolean = false
+}
+```
+- child 취소하지 않는 옵션 적용
+
+
+## CoroutineScope.isActive
+- 현재 작업이 아직 활성 상태이면 true를 반환합니다(완료되지 않고 아직 취소되지 않은 경우).
+- 취소를 지원하려면 장기 실행 계산 루프에서 이 속성을 확인하세요.
+
+```kotlin
+while (isActive) {
+    // do some computation
+}
+```
+
+- 이 속성은 CoroutineScope를 사용할 수 있는 경우 범위의 coroutineContext.isActive에 대한 바로 가기입니다. \
+  coroutineContext, isActive 및 Job.isActive를 참조하세요.
+
+```kotlin
+@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
+public val CoroutineScope.isActive: Boolean
+    get() = coroutineContext[Job]?.isActive ?: true
+```

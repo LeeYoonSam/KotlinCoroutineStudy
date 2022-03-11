@@ -1,5 +1,6 @@
 package com.ys.coroutinestudy.playground.structuredconcurrency
 
+import com.ys.coroutinestudy.util.log
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,26 +16,26 @@ fun main() = runBlocking {
 
 	scope.coroutineContext[Job]!!.invokeOnCompletion { throwable ->
 		if (throwable is CancellationException) {
-			println("Parent job was cancelled")
+			log("Parent job was cancelled")
 		}
 	}
 
 	val childCoroutine1Job = scope.launch {
 		delay(1000)
-		println("Coroutine 1 completed")
+		log("Coroutine 1 completed")
 	}
 	childCoroutine1Job.invokeOnCompletion { throwable ->
 		if (throwable is CancellationException) {
-			println("Coroutine 1 was cancelled!")
+			log("Coroutine 1 was cancelled!")
 		}
 	}
 
 	scope.launch {
 		delay(1000)
-		println("Coroutine 2 completed")
+		log("Coroutine 2 completed")
 	}.invokeOnCompletion { throwable ->
 		if (throwable is CancellationException) {
-			println("Coroutine 2 was cancelled!")
+			log("Coroutine 2 was cancelled!")
 		}
 	}
 
