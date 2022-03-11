@@ -56,3 +56,20 @@ public val children: Sequence<Job>
   이는 [async][CoroutineScope.async] 및 기타 미래형 코루틴 빌더로 생성된 하위 항목에도 적용됩니다. \
   예외가 포착되어 결과에 캡슐화되더라도 마찬가지입니다. \
   이 기본 동작은 [SupervisorJob]으로 재정의할 수 있습니다.
+
+
+## Job.cancelAndJoin
+- 작업을 취소하고 취소된 작업이 완료될 때까지 호출 코루틴을 일시 중단합니다.
+- 이 일시 중단 기능은 취소할 수 있으며 **항상** 호출 코루틴의 작업 취소를 확인합니다.
+- 이 일시 중단 함수가 호출되거나 일시 중단되는 동안 호출 코루틴의 [Job]이 취소되거나 완료되면 이 함수는 [CancellationException]을 throw합니다.
+- 특히, 자식 코루틴이 [supervisorScope] 내에서 실행되지 않는 한 자식 코루틴의 실패는 기본적으로 부모를 취소하기 때문에 \
+  자식 코루틴에서 'cancelAndJoin'을 호출하는 부모 코루틴이 자식이 실패한 경우 [CancellationException]을 던진다는 것을 의미합니다. .
+- [cancel][Job.cancel] 다음에 [join][Job.join]을 호출하는 단축키입니다.
+
+
+```kotlin
+public suspend fun Job.cancelAndJoin() {
+    cancel()
+    return join()
+}
+```
