@@ -117,3 +117,44 @@ while (isActive) {
 public val CoroutineScope.isActive: Boolean
     get() = coroutineContext[Job]?.isActive ?: true
 ```
+
+## coroutineScope
+- CoroutineScope를 만들고 이 범위로 지정된 일시 중단 블록을 호출합니다. 제공된 범위는 외부 범위에서 coroutineContext를 상속하지만 컨텍스트의 작업을 재정의합니다.
+- 이 기능은 작업의 병렬 분해를 위해 설계되었습니다. 이 범위의 자식 코루틴이 실패하면 이 범위가 실패하고 나머지 자식은 모두 취소됩니다(다른 동작은 supervisorScope 참조). \
+- 이 함수는 주어진 블록과 모든 자식 코루틴이 완료되는 즉시 반환됩니다.
+
+범위의 사용 예는 다음과 같습니다.
+```kotlin
+suspend fun showSomeData() = coroutineScope {
+    val data = async(Dispatchers.IO) { // <- extension on current scope
+     ... load some UI data for the Main thread ...
+    }
+
+    withContext(Dispatchers.Main) {
+        doSomeWork()
+        val result = data.await()
+        display(result)
+    }
+}
+```
+
+- 이 예의 범위에는 다음과 같은 의미가 있습니다.
+    - showSomeData는 데이터가 로드되고 UI에 표시되자마자 반환됩니다.
+    - doSomeWork에서 예외가 발생하면 비동기 작업이 취소되고 showSomeData가 해당 예외를 다시 발생시킵니다.
+    - showSomeData의 외부 범위가 취소되면 시작된 비동기 블록과 withContext 블록이 모두 취소됩니다.
+    - 비동기 블록이 실패하면 withContext가 취소됩니다.
+
+- 메서드는 현재 작업이 외부적으로 취소된 경우 CancellationException을 throw하거나 이 범위에 처리되지 않은 예외가 있는 경우 \
+  해당 처리되지 않은 throwable을 throw할 수 있습니다(예: 이 범위에서 실행과 함께 시작된 충돌 코루틴에서).
+
+```kotlin
+public suspend fun <R> coroutineScope(block: suspend CoroutineScope.() -> R): R {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    return suspendCoroutineUninterceptedOrReturn { uCont ->
+        val coroutine = ScopeCoroutine(uCont.context, uCont)
+        coroutine.startUndispatchedOrReturn(coroutine, block)
+    }
+}
+```
