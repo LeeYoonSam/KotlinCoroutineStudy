@@ -68,3 +68,30 @@ public suspend fun <T> withTimeoutOrNull(timeMillis: Long, block: suspend Corout
     }
 }
 ```
+
+## Emitters.transform
+- 주어진 flow 의 각 값에 변형 기능을 적용합니다.
+- 변환의 수신자는 FlowCollector이므로 변환은 방출된 요소를 변환하거나 건너뛰거나 여러 번 방출할 수 있는 유연한 함수입니다.
+- 이 연산자는 필터 및 맵 연산자를 일반화하고 다른 연산자의 빌딩 블록으로 사용할 수 있습니다.
+
+예를 들면 다음과 같습니다.
+```kotlin
+fun Flow<Int>.skipOddAndDuplicateEven(): Flow<Int> = transform { value ->
+    if (value % 2 == 0) { // Emit only even values, but twice
+        emit(value)
+        emit(value)
+    } // Do nothing if odd
+}
+```
+
+### transform
+```kotlin
+public inline fun <T, R> Flow<T>.transform(
+    @BuilderInference crossinline transform: suspend FlowCollector<R>.(value: T) -> Unit
+): Flow<R> = flow { // Note: safe flow is used here, because collector is exposed to transform on each operation
+    collect { value ->
+        // kludge, without it Unit will be returned and TCE won't kick in, KT-28938
+        return@collect transform(value)
+    }
+}
+```
