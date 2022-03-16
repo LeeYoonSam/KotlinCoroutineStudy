@@ -95,3 +95,107 @@ public inline fun <T, R> Flow<T>.transform(
     }
 }
 ```
+
+## Buffer
+- 버퍼는 지정된 용량의 채널을 통해 배출물을 흐르게 하고 별도의 코루틴에서 수집기를 실행합니다.
+- 일반적으로 흐름은 순차적입니다. 모든 연산자의 코드가 동일한 코루틴에서 실행된다는 의미입니다.
+- 예를 들어, oneEach 및 수집 연산자를 사용하는 다음 코드를 고려하십시오.
+
+```kotlin
+flowOf("A", "B", "C")
+    .onEach  { println("1$it") }
+    .collect { println("2$it") }
+```
+
+이 코드를 호출하는 코루틴 Q에 의해 다음 순서로 실행됩니다.
+> Q : -->-- [1A] -- [2A] -- [1B] -- [2B] -- [1C] -- [2C] -->--
+
+- 따라서 연산자의 코드를 실행하는 데 상당한 시간이 걸린다면 총 실행 시간은 모든 연산자의 실행 시간을 합한 것입니다.
+- 버퍼 연산자는 적용되는 흐름에 대해 실행 중에 별도의 코루틴을 만듭니다. 다음 코드를 고려하십시오.
+
+```kotlin
+flowOf("A", "B", "C")
+    .onEach  { println("1$it") }
+    .buffer()  // <--------------- buffer between onEach and collect
+    .collect { println("2$it") }
+```
+- 코드 실행을 위해 두 개의 코루틴을 사용합니다.
+
+이 코드를 호출하는 코루틴 Q는 수집을 실행하고 버퍼 이전의 코드는 Q와 동시에 별도의 새 코루틴 P에서 실행됩니다.
+
+```
+P : -->-- [1A] -- [1B] -- [1C] ---------->--  // flowOf(...).onEach { ... }
+
+                      |
+                      | channel               // buffer()
+                      V
+
+Q : -->---------- [2A] -- [2B] -- [2C] -->--  // collect
+```
+
+- 연산자의 코드를 실행하는 데 시간이 걸리면 흐름의 총 실행 시간이 줄어듭니다.
+- 채널은 코루틴 P에 의해 방출된 요소를 코루틴 Q로 보내기 위해 코루틴 사이에 사용됩니다.
+- 버퍼 연산자 앞의 코드(코루틴 P)가 버퍼 연산자 뒤의 코드(코루틴 Q)보다 빠르면 이 채널 어느 시점에서 가득 차서 소비자 코루틴 Q가 따라잡을 때까지 생산자 코루틴 P를 일시 중단합니다.
+- 용량 매개변수는 이 버퍼의 크기를 정의합니다.
+
+### 버퍼 초과 (Buffer overflow)
+- 기본적으로 emitter 는 버퍼가 오버플로될 때 일시 중단되어 수집기가 따라잡을 수 있도록 합니다.
+- 이 전략은 emitter 가 일시 중단되지 않도록 선택적 onBufferOverflow 매개 변수로 재정의할 수 있습니다.
+- 이 경우 버퍼 오버플로 시 DROP_OLDEST 전략을 사용하여 버퍼에서 가장 오래된 값을 삭제하고 가장 최근에 내보낸 값을 버퍼에 추가하거나 \
+  버퍼를 그대로 유지하면서 내보낸 최신 값을 DROP_LATEST 전략으로 삭제합니다.\
+- 사용자 정의 전략 중 하나를 구현하기 위해 하나 이상의 요소 버퍼가 사용됩니다.
+
+### 오퍼레이터 융합 (Operator fusion)
+- channelFlow, flowOn, buffer, generateIn 및 broadcastIn의 인접 애플리케이션은 항상 융합되어 제대로 구성된 하나의 채널만 실행에 사용됩니다.
+- 명시적으로 지정된 버퍼 용량은 어떤 크기의 버퍼라도 효과적으로 요청하는 buffer() 또는 buffer(Channel.BUFFERED) 호출보다 우선합니다. \
+  지정된 버퍼 크기의 여러 요청은 요청된 버퍼 크기의 합계를 포함하는 버퍼를 생성합니다.
+- onBufferOverflow 매개변수의 기본값이 아닌 버퍼 호출은 업스트림을 일시 중단하지 않으므로 업스트림 버퍼가 사용되지 않기 때문에 바로 앞의 모든 버퍼링 연산자를 재정의합니다.
+
+### 개념적 구현 (Conceptual implementation)
+- 버퍼의 실제 구현은 융합으로 인해 사소하지 않지만 개념적으로 기본 구현은 채널을 생성하기 위해 생성 코루틴 빌더를 사용하여 작성할 수 있는 다음 코드와 이를 소비하기 위한 consumerEach 확장과 동일합니다.
+
+```kotlin
+fun <T> Flow<T>.buffer(capacity: Int = DEFAULT): Flow<T> = flow {
+    coroutineScope { // limit the scope of concurrent producer coroutine
+        val channel = produce(capacity = capacity) {
+            collect { send(it) } // send all to channel
+        }
+        // emit all received values
+        channel.consumeEach { emit(it) }
+    }
+}
+```
+
+### 융합 (Conflation)
+- Channel.CONFLATED의 용량으로 이 함수를 사용하는 것은 buffer(onBufferOverflow = BufferOverflow.DROP_OLDEST)에 대한 바로 가기이며 별도의 병합 연산자를 통해 사용할 수 있습니다.
+
+---
+
+매개변수:
+- capacity - 코루틴 간의 버퍼 유형/용량. 허용되는 값은 Channel(...) 팩토리 함수에서와 동일합니다: \
+  BUFFERED(기본값), CONFLATED, RENDEZVOUS, UNLIMITED 또는 명시적으로 요청된 크기를 나타내는 음수가 아닌 값.
+- onBufferOverflow - 버퍼 오버플로에 대한 작업을 구성합니다\
+  (선택 사항, 기본값은 SUSPEND, 용량 >= 0 또는 용량 == Channel.BUFFERED인 경우에만 지원됨, 적어도 하나의 버퍼링된 요소가 있는 채널을 암시적으로 생성).
+
+```kotlin
+public fun <T> Flow<T>.buffer(capacity: Int = BUFFERED, onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND): Flow<T> {
+    require(capacity >= 0 || capacity == BUFFERED || capacity == CONFLATED) {
+        "Buffer size should be non-negative, BUFFERED, or CONFLATED, but was $capacity"
+    }
+    require(capacity != CONFLATED || onBufferOverflow == BufferOverflow.SUSPEND) {
+        "CONFLATED capacity cannot be used with non-default onBufferOverflow"
+    }
+    // desugar CONFLATED capacity to (0, DROP_OLDEST)
+    var capacity = capacity
+    var onBufferOverflow = onBufferOverflow
+    if (capacity == CONFLATED) {
+        capacity = 0
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    }
+    // create a flow
+    return when (this) {
+        is FusibleFlow -> fuse(capacity = capacity, onBufferOverflow = onBufferOverflow)
+        else -> ChannelFlowOperatorImpl(this, capacity = capacity, onBufferOverflow = onBufferOverflow)
+    }
+}
+```
