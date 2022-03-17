@@ -98,7 +98,7 @@ public inline fun <T, R> Flow<T>.transform(
 
 ## Buffer
 - 버퍼는 지정된 용량의 채널을 통해 배출물을 흐르게 하고 별도의 코루틴에서 수집기를 실행합니다.
-- 일반적으로 흐름은 순차적입니다. 모든 연산자의 코드가 동일한 코루틴에서 실행된다는 의미입니다.
+- 일반적으로 flow은 순차적입니다. 모든 연산자의 코드가 동일한 코루틴에서 실행된다는 의미입니다.
 - 예를 들어, oneEach 및 수집 연산자를 사용하는 다음 코드를 고려하십시오.
 
 ```kotlin
@@ -111,7 +111,7 @@ flowOf("A", "B", "C")
 > Q : -->-- [1A] -- [2A] -- [1B] -- [2B] -- [1C] -- [2C] -->--
 
 - 따라서 연산자의 코드를 실행하는 데 상당한 시간이 걸린다면 총 실행 시간은 모든 연산자의 실행 시간을 합한 것입니다.
-- 버퍼 연산자는 적용되는 흐름에 대해 실행 중에 별도의 코루틴을 만듭니다. 다음 코드를 고려하십시오.
+- 버퍼 연산자는 적용되는 flow에 대해 실행 중에 별도의 코루틴을 만듭니다. 다음 코드를 고려하십시오.
 
 ```kotlin
 flowOf("A", "B", "C")
@@ -133,7 +133,7 @@ P : -->-- [1A] -- [1B] -- [1C] ---------->--  // flowOf(...).onEach { ... }
 Q : -->---------- [2A] -- [2B] -- [2C] -->--  // collect
 ```
 
-- 연산자의 코드를 실행하는 데 시간이 걸리면 흐름의 총 실행 시간이 줄어듭니다.
+- 연산자의 코드를 실행하는 데 시간이 걸리면 flow의 총 실행 시간이 줄어듭니다.
 - 채널은 코루틴 P에 의해 방출된 요소를 코루틴 Q로 보내기 위해 코루틴 사이에 사용됩니다.
 - 버퍼 연산자 앞의 코드(코루틴 P)가 버퍼 연산자 뒤의 코드(코루틴 Q)보다 빠르면 이 채널 어느 시점에서 가득 차서 소비자 코루틴 Q가 따라잡을 때까지 생산자 코루틴 P를 일시 중단합니다.
 - 용량 매개변수는 이 버퍼의 크기를 정의합니다.
@@ -199,3 +199,36 @@ public fun <T> Flow<T>.buffer(capacity: Int = BUFFERED, onBufferOverflow: Buffer
     }
 }
 ```
+
+## conflate
+- 통합 채널을 통해 flow 방출을 통합하고 별도의 코루틴에서 수집기를 실행합니다.
+- 이것의 효과는 느린 수집기로 인해 emitter 가 일시 중단되지 않지만 수집기는 항상 가장 최근에 방출된 값을 가져옵니다.
+
+예를 들어, 1에서 30 사이에 100ms 지연이 있는 정수를 방출하는 flow을 고려하십시오.
+```kotlin
+val flow = flow {
+    for (i in 1..30) {
+        delay(100)
+        emit(i)
+    }
+}
+```
+
+'conflate()' 연산자를 적용하면 각 요소에서 1초를 지연하는 수집기가 정수 1, 10, 20, 30을 얻을 수 있습니다.
+```kotlin
+val result = flow.conflate().onEach { delay(1000) }.toList()
+assertEquals(listOf(1, 10, 20, 30), result)
+```
+
+- 'conflate' 연산자는 'capacity'가 [Channel.CONFLATED][Channel.CONFLATED]인 [buffer]에 대한 바로 가기이며, \
+  이는 차례에 의해 생성된 최신 요소만 유지하는 버퍼에 대한 바로 가기입니다. \
+  buffer(onBufferOverflow = [BufferOverflow.DROP_OLDEST][BufferOverflow.DROP_OLDEST]).
+
+```kotlin
+public fun <T> Flow<T>.conflate(): Flow<T> = buffer(CONFLATED)
+```
+
+### 오퍼레이터 융합
+- `conflate`/[buffer], [channelFlow], [flowOn] 및 [produceIn]의 인접 애플리케이션은 항상 하나의 적절하게 구성된 채널만 실행에 사용되도록 융합됩니다.
+- [StateFlow]의 모든 인스턴스는 이미 `conflate` 연산자가 적용된 것처럼 작동하므로 `StateFlow`에 `conflate`를 적용해도 효과가 없습니다.
+- Operator Fusion에 대한 [StateFlow] 문서를 참조하십시오.
