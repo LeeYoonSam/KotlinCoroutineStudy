@@ -3,8 +3,7 @@ package com.ys.coroutinestudy.playground.flow
 import com.ys.coroutinestudy.util.log
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import kotlin.system.measureTimeMillis
@@ -19,10 +18,10 @@ private fun simple(): Flow<Int> = flow {
 fun main() = runBlocking {
 	val time = measureTimeMillis {
 		simple()
-			.conflate() // emissions 을 각각 처리하지 않고 합쳐서 처리.
-			.collect { value ->
-				delay(300) // 300ms 동안 처리한다고 가정
-				log(value)
+			.collectLatest { value ->
+				log("Collection $value")
+				delay(300)
+				log("Done $value")
 			}
 	}
 	log("Collected in $time ms")

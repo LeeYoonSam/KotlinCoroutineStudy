@@ -232,3 +232,21 @@ public fun <T> Flow<T>.conflate(): Flow<T> = buffer(CONFLATED)
 - `conflate`/[buffer], [channelFlow], [flowOn] 및 [produceIn]의 인접 애플리케이션은 항상 하나의 적절하게 구성된 채널만 실행에 사용되도록 융합됩니다.
 - [StateFlow]의 모든 인스턴스는 이미 `conflate` 연산자가 적용된 것처럼 작동하므로 `StateFlow`에 `conflate`를 적용해도 효과가 없습니다.
 - Operator Fusion에 대한 [StateFlow] 문서를 참조하십시오.
+
+## collectLatest
+- 제공된 작업으로 주어진 flow를 수집하는 터미널 flow 연산자입니다.
+- 수집과의 중요한 차이점은 원래 flow가 새 값을 내보내면 이전 값에 대한 작업 블록이 취소된다는 것입니다.
+
+다음 예를 통해 증명할 수 있습니다.
+```kotlin
+flow {
+    emit(1)
+    delay(50)
+    emit(2)
+}.collectLatest { value ->
+    println("Collecting $value")
+    delay(100) // Emulate work
+    println("$value collected")
+}
+prints "Collecting 1, Collecting 2, 2 collected"
+```
