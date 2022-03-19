@@ -250,3 +250,32 @@ flow {
 }
 prints "Collecting 1, Collecting 2, 2 collected"
 ```
+
+## Flow<T>.onEach
+- 업스트림 flow의 각 값이 다운스트림으로 내보내지기 **전에** 지정된 [작업]을 호출하는 flow을 반환합니다.
+
+```kotlin
+public fun <T> Flow<T>.onEach(action: suspend (T) -> Unit): Flow<T> = transform { value ->
+    action(value)
+    return@transform emit(value)
+}
+```
+
+## FlatmapMerger
+- 다른 flow을 반환하는 변환을 적용한 다음 이러한 flow을 병합하고 병합하여 원래 flow에서 내보낸 요소를 변환합니다.
+- 이 연산자는 변환을 순차적으로 호출한 다음 결과 flow을 동시에 수집된 flow 수에 대한 동시성 제한과 병합합니다. \
+  map(transform).flattenMerge(동시성)의 단축키입니다. 자세한 내용은 flattenMerge를 참조하십시오.
+- 이 연산자는 매우 친숙해 보이지만 일반적인 애플리케이션별 flow에서는 사용하지 않는 것이 좋습니다. \
+  대부분의 경우 맵 연산자에서 작업을 일시 중단하는 것으로 충분하고 선형 변환을 추론하기가 훨씬 쉽습니다.
+
+오퍼레이터 융합
+- #이 연산자 이후의 flowOn, 버퍼 및 generateIn의 응용 프로그램은 동시 병합과 융합되어 병합 논리 실행에 제대로 구성된 하나의 채널만 사용됩니다.
+
+```kotlin
+@FlowPreview
+public fun <T, R> Flow<T>.flatMapMerge(
+    concurrency: Int = DEFAULT_CONCURRENCY,
+    transform: suspend (value: T) -> Flow<R>
+): Flow<R> =
+    map(transform).flattenMerge(concurrency)
+```
