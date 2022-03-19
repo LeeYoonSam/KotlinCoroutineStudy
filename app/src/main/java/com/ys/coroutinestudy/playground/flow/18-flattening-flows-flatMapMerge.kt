@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
@@ -25,7 +26,7 @@ fun main() = runBlocking {
 			delay(100)
 			log("now: $it")
 		}
-		.flatMapConcat { requestFlow(it) }
+		.flatMapMerge { requestFlow(it) }
 		.collect { value ->
 			log("$value at ${System.currentTimeMillis() - startTime} ms from start")
 		}
