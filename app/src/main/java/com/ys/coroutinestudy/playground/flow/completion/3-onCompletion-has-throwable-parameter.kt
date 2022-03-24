@@ -18,6 +18,6 @@ fun main() = runBlocking {
 		//.onCompletion{ }은 .catch{ }보다 먼저 호출됩니다.
 		//.onCompletion{ }은 예외를 처리하지 않으며 예외는 여전히 다운스트림으로 흐릅니다.
 		.onCompletion { cause -> if (cause != null) log("Flow completed exceptionally") }
-		.catch { cause -> log("Caught exception") }
+		.catch { log("Caught exception") }
 		.collect { value -> log(value) }
 }
