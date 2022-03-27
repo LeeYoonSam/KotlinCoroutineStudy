@@ -1,0 +1,32 @@
+# SharedFlow
+
+## SharedFlow - MutableSharedFlow
+- 주어진 구성 매개변수를 사용하여 MutableSharedFlow를 만듭니다.
+- 이 함수는 지원되지 않는 매개변수 값 또는 이들의 조합에 대해 IllegalArgumentException을 발생시킵니다.
+
+매개변수:
+replay - 새 구독자에게 재생되는 값의 수입니다(음수일 수 없으며 기본값은 0).
+
+extraBufferCapacity - 재생 외에 버퍼링된 값의 수. 방출은 버퍼 공간이 남아 있는 동안 일시 중단되지 않습니다(선택 사항, 음수가 될 수 없으며 기본값은 0).
+
+onBufferOverflow - 버퍼 오버플로에 대한 방출 작업을 구성합니다. 선택 사항, 기본값은 값을 내보내려는 시도를 일시 중단하는 것입니다. \
+  BufferOverflow.SUSPEND 이외의 값은 재생 > 0 또는 extraBufferCapacity > 0인 경우에만 지원됩니다. \
+  버퍼 오버플로는 새 값을 수락할 준비가 되지 않은 구독자가 하나 이상 있는 경우에만 발생할 수 있습니다. \
+  구독자가 없는 경우 가장 최근의 재생 값만 저장되고 버퍼 오버플로 동작은 트리거되지 않으며 영향을 미치지 않습니다.
+
+```kotlin
+public fun <T> MutableSharedFlow(
+    replay: Int = 0,
+    extraBufferCapacity: Int = 0,
+    onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND
+): MutableSharedFlow<T> {
+    require(replay >= 0) { "replay cannot be negative, but was $replay" }
+    require(extraBufferCapacity >= 0) { "extraBufferCapacity cannot be negative, but was $extraBufferCapacity" }
+    require(replay > 0 || extraBufferCapacity > 0 || onBufferOverflow == BufferOverflow.SUSPEND) {
+        "replay or extraBufferCapacity must be positive with non-default onBufferOverflow strategy $onBufferOverflow"
+    }
+    val bufferCapacity0 = replay + extraBufferCapacity
+    val bufferCapacity = if (bufferCapacity0 < 0) Int.MAX_VALUE else bufferCapacity0 // coerce to MAX_VALUE on overflow
+    return SharedFlowImpl(replay, bufferCapacity, onBufferOverflow)
+}
+```
