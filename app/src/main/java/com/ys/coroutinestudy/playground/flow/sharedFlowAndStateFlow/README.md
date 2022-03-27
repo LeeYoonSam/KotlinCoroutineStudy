@@ -30,3 +30,38 @@ public fun <T> MutableSharedFlow(
     return SharedFlowImpl(replay, bufferCapacity, onBufferOverflow)
 }
 ```
+
+### StateFlow - MutableStateFlow
+- 값에 대한 설정자를 제공하는 변경 가능한 StateFlow입니다. \
+  MutableStateFlow(value) 생성자 함수를 사용하여 초기 값이 지정된 MutableStateFlow의 인스턴스를 생성할 수 있습니다.
+- 상태 흐름에 대한 자세한 내용은 StateFlow 설명서를 참조하세요.
+- 상속에 대해 안정적이지 않음
+- MutableStateFlow 인터페이스는 미래에 이 인터페이스에 새로운 메서드가 추가될 수 있으므로 타사 라이브러리의 상속에 대해 안정적이지 않지만 사용하기에 안정적입니다. \
+  MutableStateFlow() 생성자 함수를 사용하여 구현을 만듭니다.
+
+```kotlin
+public interface MutableStateFlow<T> : StateFlow<T>, MutableSharedFlow<T> {
+    /**
+     * The current value of this state flow.
+     *
+     * Setting a value that is [equal][Any.equals] to the previous one does nothing.
+     *
+     * This property is **thread-safe** and can be safely updated from concurrent coroutines without
+     * external synchronization.
+     */
+    public override var value: T
+
+    /**
+     * Atomically compares the current [value] with [expect] and sets it to [update] if it is equal to [expect].
+     * The result is `true` if the [value] was set to [update] and `false` otherwise.
+     *
+     * This function use a regular comparison using [Any.equals]. If both [expect] and [update] are equal to the
+     * current [value], this function returns `true`, but it does not actually change the reference that is
+     * stored in the [value].
+     *
+     * This method is **thread-safe** and can be safely invoked from concurrent coroutines without
+     * external synchronization.
+     */
+    public fun compareAndSet(expect: T, update: T): Boolean
+}
+```
