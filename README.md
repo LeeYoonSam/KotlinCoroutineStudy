@@ -127,3 +127,23 @@ public fun <T> CoroutineScope.async(
     return coroutine
 }
 ```
+
+## Parcelize 디펜던시
+@Parcelize 에서 에러발생시 Android Extensions 플러그인 추가
+
+```
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
+```
+
+### 플러그인 추가 방법
+- app/buiild.gradle
+
+```
+plugins {
+    ...
+    id 'kotlin-android-extensions'
+}
+```
+
