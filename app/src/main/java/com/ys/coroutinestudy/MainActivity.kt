@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.ys.coroutinestudy.base.AllDemosCategory
@@ -32,6 +33,8 @@ import com.ys.coroutinestudy.base.UseCase
 import com.ys.coroutinestudy.base.UseCaseCategory
 import com.ys.coroutinestudy.common.KEY_DESCRIPTION
 import com.ys.coroutinestudy.common.Navigator
+import com.ys.coroutinestudy.ui.component.HorizontalDivider
+import com.ys.coroutinestudy.ui.component.VerticalDivider
 import com.ys.coroutinestudy.ui.theme.CoroutineStudyTheme
 import com.ys.coroutinestudy.util.toast
 
@@ -141,7 +144,8 @@ private fun DisplayDemoCategory(category: UseCaseCategory, onNavigate: (Demo) ->
 			ListItem(
 				text = {
 					Text(
-						modifier = Modifier.height(56.dp)
+						modifier = Modifier
+							.padding(32.dp)
 							.wrapContentSize(Alignment.Center),
 						text = demo.description
 					)
@@ -150,6 +154,8 @@ private fun DisplayDemoCategory(category: UseCaseCategory, onNavigate: (Demo) ->
 					onNavigate(demo)
 				}
 			)
+
+			HorizontalDivider(color = MaterialTheme.colors.primary)
 		}
 	}
 }

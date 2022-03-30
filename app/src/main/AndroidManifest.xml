@@ -22,6 +22,7 @@
         </activity>
 
         <activity android:name=".usecase.coroutines.usecase1.PerformSingleNetworkRequestActivity"/>
+        <activity android:name=".usecase.coroutines.usecase2.Perform2SequentialNetworkRequestsActivity"/>
     </application>
 
 </manifest>
