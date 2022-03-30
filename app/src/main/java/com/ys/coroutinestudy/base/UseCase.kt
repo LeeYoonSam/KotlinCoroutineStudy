@@ -1,18 +1,21 @@
 package com.ys.coroutinestudy.base
 
-import android.os.Parcelable
 import androidx.appcompat.app.AppCompatActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase1.PerformSingleNetworkRequestActivity
-import kotlinx.android.parcel.Parcelize
 
-@Parcelize
-data class UseCase(
-    val description: String,
+sealed class Demo(val description: String) {
+    override fun toString() = description
+}
+
+class UseCase(
+    description: String,
     val targetActivity: Class<out AppCompatActivity>
-) : Parcelable
+) : Demo(description)
 
-@Parcelize
-data class UseCaseCategory(val categoryName: String, val useCases: List<UseCase>) : Parcelable
+class UseCaseCategory(
+    categoryName: String,
+    val useCases: List<Demo>
+) : Demo(categoryName)
 
 const val useCase1Description = "#1 Perform single network request"
 const val useCase2Description = "#2 Perform two sequential network requests"
@@ -38,9 +41,10 @@ const val useCase16Description =
 const val useCase17Description =
     "#17 Perform heavy calculation on Main Thread without freezing the UI"
 
-private val coroutinesUseCases =
+val coroutinesUseCases =
     UseCaseCategory(
-        "Coroutine Use Cases", listOf(
+        categoryName = "Coroutine Use Cases",
+        useCases = listOf(
             UseCase(
                 useCase1Description,
                 PerformSingleNetworkRequestActivity::class.java
@@ -48,6 +52,9 @@ private val coroutinesUseCases =
         )
     )
 
-val useCaseCategories = listOf(
-    coroutinesUseCases
+val AllDemosCategory = UseCaseCategory(
+    categoryName = "Activity UseCase",
+    listOf(
+        coroutinesUseCases,
+    )
 )
