@@ -12,6 +12,8 @@ abstract class BaseActivity : AppCompatActivity() {
 
 	override fun onStart() {
 		super.onStart()
+		supportActionBar?.hide()
+
 		setToolbarTitle(getToolbarTitle())
 		getUpButton().setOnClickListener {
 			finish()
