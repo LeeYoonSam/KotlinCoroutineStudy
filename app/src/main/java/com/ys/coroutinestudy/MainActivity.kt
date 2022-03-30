@@ -30,6 +30,7 @@ import com.ys.coroutinestudy.base.AllDemosCategory
 import com.ys.coroutinestudy.base.Demo
 import com.ys.coroutinestudy.base.UseCase
 import com.ys.coroutinestudy.base.UseCaseCategory
+import com.ys.coroutinestudy.common.KEY_DESCRIPTION
 import com.ys.coroutinestudy.common.Navigator
 import com.ys.coroutinestudy.ui.theme.CoroutineStudyTheme
 import com.ys.coroutinestudy.util.toast
@@ -52,7 +53,11 @@ class MainActivity : ComponentActivity() {
 		setContent {
 
 			val activityStarter = fun(useCase: UseCase) {
-				startActivity(Intent(this@MainActivity, useCase.targetActivity))
+				startActivity(
+					Intent(this@MainActivity, useCase.targetActivity).apply {
+						putExtra(KEY_DESCRIPTION, useCase.description)
+					}
+				)
 			}
 
 			val navigator = rememberSaveable(

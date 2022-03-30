@@ -3,7 +3,7 @@ package com.ys.coroutinestudy.usecase.coroutines.usecase1
 import android.os.Bundle
 import androidx.activity.viewModels
 import com.ys.coroutinestudy.base.BaseActivity
-import com.ys.coroutinestudy.base.useCase1Description
+import com.ys.coroutinestudy.common.KEY_DESCRIPTION
 import com.ys.coroutinestudy.databinding.ActivityPerformsinglenetworkrequestBinding
 import com.ys.coroutinestudy.util.fromHtml
 import com.ys.coroutinestudy.util.setGone
@@ -15,10 +15,14 @@ import kotlinx.android.synthetic.main.activity_performsinglenetworkrequest.textV
 
 class PerformSingleNetworkRequestActivity: BaseActivity() {
 
-	override fun getToolbarTitle() = useCase1Description
+	private val descriptions: String by lazy {
+		intent.getStringExtra(KEY_DESCRIPTION).orEmpty()
+	}
 
 	private val binding by lazy { ActivityPerformsinglenetworkrequestBinding.inflate(layoutInflater) }
 	private val viewModel: PerformSingleNetworkRequestViewModel by viewModels()
+
+	override fun getToolbarTitle() = descriptions
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
