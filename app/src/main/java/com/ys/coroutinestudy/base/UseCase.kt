@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase1.PerformSingleNetworkRequestActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase2.Perform2SequentialNetworkRequestsActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase2.callbacks.SequentialNetworkRequestsCallbacksActivity
+import com.ys.coroutinestudy.usecase.coroutines.usecase2.rx.SequentialNetworkRequestsRxActivity
 
 sealed class Demo(val description: String) {
     override fun toString() = description
@@ -58,6 +59,10 @@ val coroutinesUseCases =
             UseCase(
                 useCase2UsingCallbacksDescription,
                 SequentialNetworkRequestsCallbacksActivity::class.java
+            ),
+            UseCase(
+                useCase2UsingRxDescription,
+                SequentialNetworkRequestsRxActivity::class.java
             ),
         )
     )
