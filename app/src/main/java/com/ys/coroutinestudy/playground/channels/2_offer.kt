@@ -1,5 +1,6 @@
 package com.ys.coroutinestudy.playground.channels
 
+import com.ys.coroutinestudy.util.log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.channels.consumeEach
@@ -10,6 +11,7 @@ import kotlinx.coroutines.runBlocking
 import kotlin.random.Random
 
 fun main() = runBlocking {
+	System.setProperty("kotlinx.coroutines.debug", "on" )
 
 	val getRandomIntsChannel = generateRandom()
 
@@ -17,10 +19,10 @@ fun main() = runBlocking {
 
 	getRandomIntsChannel.consumeEach {
 		// 제안이 있는 경우 5-6개의 제안된 항목만 소비합니다.
-		println("Random number $it consumed")
+		log("Random number $it consumed")
 	}
 
-	println("Done!")
+	log("Done!")
 }
 
 // 반환 유형은 ReceiveChannel입니다.

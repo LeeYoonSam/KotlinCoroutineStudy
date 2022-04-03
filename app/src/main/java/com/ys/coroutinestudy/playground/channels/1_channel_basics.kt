@@ -1,6 +1,6 @@
 package com.ys.coroutinestudy.playground.channels
 
-import com.ys.coroutinestudy.util.logWithThreadName
+import com.ys.coroutinestudy.util.log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.consumeEach
@@ -8,20 +8,21 @@ import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.launch
 
 fun main() {
+
 	GlobalScope.launch {
 		// 호출순서 - 1
-		produceRandom().consumeEach { logWithThreadName { println(it) } }
+		produceRandom().consumeEach { log(it) }
 
 		// 호출순서 - 3
 		launch {
-			println("launch some task")
+			log("launch some task")
 		}
 
 		// 호출순서 - 2
-		println("All values consumed")
+		log("All values consumed")
 	}
 
-	logWithThreadName { println("main() finished") }
+	log("main() finished")
 	Thread.sleep(6000)
 }
 
