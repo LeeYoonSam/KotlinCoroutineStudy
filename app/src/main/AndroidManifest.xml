@@ -26,6 +26,7 @@
         <activity android:name=".usecase.coroutines.usecase2.callbacks.SequentialNetworkRequestsCallbacksActivity"/>
         <activity android:name=".usecase.coroutines.usecase2.rx.SequentialNetworkRequestsRxActivity"/>
         <activity android:name=".usecase.coroutines.usecase3.PerformNetworkRequestsConcurrentlyActivity"/>
+        <activity android:name=".usecase.coroutines.usecase4.VariableAmountOfNetworkRequestsActivity"/>
     </application>
 
 </manifest>
