@@ -7,6 +7,7 @@ import com.ys.coroutinestudy.usecase.coroutines.usecase2.callbacks.SequentialNet
 import com.ys.coroutinestudy.usecase.coroutines.usecase2.rx.SequentialNetworkRequestsRxActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase3.PerformNetworkRequestsConcurrentlyActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase4.VariableAmountOfNetworkRequestsActivity
+import com.ys.coroutinestudy.usecase.coroutines.usecase5.NetworkRequestWithTimeoutActivity
 
 sealed class Demo(val description: String) {
     override fun toString() = description
@@ -73,6 +74,10 @@ val coroutinesUseCases =
             UseCase(
                 useCase4Description,
                 VariableAmountOfNetworkRequestsActivity::class.java
+            ),
+            UseCase(
+                useCase5Description,
+                NetworkRequestWithTimeoutActivity::class.java
             ),
         )
     )
