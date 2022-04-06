@@ -1,5 +1,6 @@
 package com.ys.coroutinestudy.playground.flow
 
+import com.ys.coroutinestudy.util.log
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -24,7 +25,7 @@ fun main() = runBlocking {
 	// 메인 스레드가 차단되었는지 확인하기 위해 동시에 코루틴을 시작합니다.
 	launch {
 		for (k in 1..3) {
-			println("I'm not blocked $k")
+			log("I'm not blocked $k")
 			delay(100)
 		}
 	}

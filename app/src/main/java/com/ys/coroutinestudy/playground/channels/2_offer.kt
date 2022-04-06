@@ -11,8 +11,6 @@ import kotlinx.coroutines.runBlocking
 import kotlin.random.Random
 
 fun main() = runBlocking {
-	System.setProperty("kotlinx.coroutines.debug", "on" )
-
 	val getRandomIntsChannel = generateRandom()
 
 	delay(2500)
