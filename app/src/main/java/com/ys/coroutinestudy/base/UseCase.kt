@@ -10,6 +10,7 @@ import com.ys.coroutinestudy.usecase.coroutines.usecase4.VariableAmountOfNetwork
 import com.ys.coroutinestudy.usecase.coroutines.usecase5.NetworkRequestWithTimeoutActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase6.RetryNetworkRequestActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase7.TimeoutAndRetryActivity
+import com.ys.coroutinestudy.usecase.coroutines.usecase7.callbacks.TimeoutAndRetryCallbackActivity
 
 sealed class Demo(val description: String) {
     override fun toString() = description
@@ -88,6 +89,10 @@ val coroutinesUseCases =
             UseCase(
                 useCase7Description,
                 TimeoutAndRetryActivity::class.java
+            ),
+            UseCase(
+                useCase7UsingCallbacksDescription,
+                TimeoutAndRetryCallbackActivity::class.java
             ),
         )
     )
