@@ -33,6 +33,7 @@
         <activity android:name=".usecase.coroutines.usecase6.RetryNetworkRequestActivity"/>
         <activity android:name=".usecase.coroutines.usecase7.TimeoutAndRetryActivity"/>
         <activity android:name=".usecase.coroutines.usecase7.callbacks.TimeoutAndRetryCallbackActivity"/>
+        <activity android:name=".usecase.coroutines.usecase7.rx.TimeoutAndRetryRxActivity"/>
     </application>
 
 </manifest>
