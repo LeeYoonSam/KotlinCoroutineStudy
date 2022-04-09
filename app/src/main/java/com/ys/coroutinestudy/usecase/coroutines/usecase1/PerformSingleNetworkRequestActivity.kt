@@ -9,9 +9,6 @@ import com.ys.coroutinestudy.util.fromHtml
 import com.ys.coroutinestudy.util.setGone
 import com.ys.coroutinestudy.util.setVisible
 import com.ys.coroutinestudy.util.toast
-import kotlinx.android.synthetic.main.activity_performsinglenetworkrequest.btnPerformSingleNetworkRequest
-import kotlinx.android.synthetic.main.activity_performsinglenetworkrequest.progressBar
-import kotlinx.android.synthetic.main.activity_performsinglenetworkrequest.textViewResult
 
 class PerformSingleNetworkRequestActivity: BaseActivity() {
 
@@ -59,7 +56,7 @@ class PerformSingleNetworkRequestActivity: BaseActivity() {
 		btnPerformSingleNetworkRequest.isEnabled = false
 	}
 
-	private fun onSuccess(uiState: UiState.Success) {
+	private fun onSuccess(uiState: UiState.Success) = with(binding) {
 		progressBar.setGone()
 		btnPerformSingleNetworkRequest.isEnabled = true
 		val readableVersions = uiState.recentVersions.map { "API ${it.apiLevel}: ${it.name}" }
@@ -69,7 +66,7 @@ class PerformSingleNetworkRequestActivity: BaseActivity() {
 		)
 	}
 
-	private fun onError(uiState: UiState.Error) {
+	private fun onError(uiState: UiState.Error) = with(binding) {
 		progressBar.setGone()
 		btnPerformSingleNetworkRequest.isEnabled = true
 		toast(uiState.message)
