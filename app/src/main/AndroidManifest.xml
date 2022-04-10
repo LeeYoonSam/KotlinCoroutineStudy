@@ -34,6 +34,7 @@
         <activity android:name=".usecase.coroutines.usecase7.TimeoutAndRetryActivity"/>
         <activity android:name=".usecase.coroutines.usecase7.callbacks.TimeoutAndRetryCallbackActivity"/>
         <activity android:name=".usecase.coroutines.usecase7.rx.TimeoutAndRetryRxActivity"/>
+        <activity android:name=".usecase.coroutines.usecase8.RoomAndCoroutinesActivity"/>
     </application>
 
 </manifest>
