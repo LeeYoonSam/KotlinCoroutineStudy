@@ -13,6 +13,7 @@ import com.ys.coroutinestudy.usecase.coroutines.usecase7.TimeoutAndRetryActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase7.callbacks.TimeoutAndRetryCallbackActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase7.rx.TimeoutAndRetryRxActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase8.RoomAndCoroutinesActivity
+import com.ys.coroutinestudy.usecase.coroutines.usecase9.DebuggingCoroutinesActivity
 
 sealed class Demo(val description: String) {
     override fun toString() = description
@@ -103,6 +104,10 @@ val coroutinesUseCases =
             UseCase(
                 useCase8Description,
                 RoomAndCoroutinesActivity::class.java
+            ),
+            UseCase(
+                useCase9Description,
+                DebuggingCoroutinesActivity::class.java
             ),
         )
     )
