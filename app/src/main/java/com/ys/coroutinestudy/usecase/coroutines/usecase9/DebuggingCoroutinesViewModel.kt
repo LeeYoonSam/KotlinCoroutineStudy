@@ -27,7 +27,7 @@ class DebuggingCoroutinesViewModel(
 			Timber.d(addCoroutineDebugInfo("Initial coroutine launched"))
 
 			try {
-				val recentVersions= mockApi.getRecentAndroidVersions()
+				val recentVersions = mockApi.getRecentAndroidVersions()
 				Timber.d(addCoroutineDebugInfo("Recent Android Versions returned"))
 				uiState.value = UiState.Success(recentVersions)
 			} catch (e: Exception) {
