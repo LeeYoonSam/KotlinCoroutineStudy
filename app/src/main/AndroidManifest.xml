@@ -38,6 +38,7 @@
         <activity android:name=".usecase.coroutines.usecase9.DebuggingCoroutinesActivity"/>
         <activity android:name=".usecase.coroutines.usecase10.CalculationInBackgroundActivity"/>
         <activity android:name=".usecase.coroutines.usecase11.CooperativeCancellationActivity"/>
+        <activity android:name=".usecase.coroutines.usecase12.CalculationInSeveralCoroutinesActivity"/>
     </application>
 
 </manifest>
