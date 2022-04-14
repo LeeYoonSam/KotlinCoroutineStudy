@@ -5,6 +5,7 @@ import com.ys.coroutinestudy.usecase.coroutines.usecase1.PerformSingleNetworkReq
 import com.ys.coroutinestudy.usecase.coroutines.usecase10.CalculationInBackgroundActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase11.CooperativeCancellationActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase12.CalculationInSeveralCoroutinesActivity
+import com.ys.coroutinestudy.usecase.coroutines.usecase13.ExceptionHandlingActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase2.Perform2SequentialNetworkRequestsActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase2.callbacks.SequentialNetworkRequestsCallbacksActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase2.rx.SequentialNetworkRequestsRxActivity
@@ -123,6 +124,10 @@ val coroutinesUseCases =
             UseCase(
                 useCase12Description,
                 CalculationInSeveralCoroutinesActivity::class.java
+            ),
+            UseCase(
+                useCase13Description,
+                ExceptionHandlingActivity::class.java
             ),
         )
     )
