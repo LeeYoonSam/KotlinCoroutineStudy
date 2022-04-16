@@ -3,7 +3,7 @@
     package="com.ys.coroutinestudy">
 
     <application
-        android:name=".KotlinCoroutineStudyApplication"
+        android:name=".CoroutineUsecasesOnAndroidApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -40,6 +40,7 @@
         <activity android:name=".usecase.coroutines.usecase11.CooperativeCancellationActivity"/>
         <activity android:name=".usecase.coroutines.usecase12.CalculationInSeveralCoroutinesActivity"/>
         <activity android:name=".usecase.coroutines.usecase13.ExceptionHandlingActivity"/>
+        <activity android:name=".usecase.coroutines.usecase14.ContinueCoroutineWhenUserLeavesScreenActivity"/>
     </application>
 
 </manifest>
