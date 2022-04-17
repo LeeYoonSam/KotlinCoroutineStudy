@@ -7,6 +7,7 @@ import com.ys.coroutinestudy.usecase.coroutines.usecase11.CooperativeCancellatio
 import com.ys.coroutinestudy.usecase.coroutines.usecase12.CalculationInSeveralCoroutinesActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase13.ExceptionHandlingActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase14.ContinueCoroutineWhenUserLeavesScreenActivity
+import com.ys.coroutinestudy.usecase.coroutines.usecase15.WorkManagerActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase2.Perform2SequentialNetworkRequestsActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase2.callbacks.SequentialNetworkRequestsCallbacksActivity
 import com.ys.coroutinestudy.usecase.coroutines.usecase2.rx.SequentialNetworkRequestsRxActivity
@@ -133,6 +134,10 @@ val coroutinesUseCases =
             UseCase(
                 useCase14Description,
                 ContinueCoroutineWhenUserLeavesScreenActivity::class.java
+            ),
+            UseCase(
+                useCase15Description,
+                WorkManagerActivity::class.java
             ),
         )
     )

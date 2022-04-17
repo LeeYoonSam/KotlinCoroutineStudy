@@ -65,6 +65,10 @@ dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.4.1'
 
+    def work_manager_version = "2.7.1"
+    implementation "androidx.work:work-runtime:$work_manager_version"
+    implementation "androidx.work:work-runtime-ktx:$work_manager_version"
+
     // Retrofit
     def retrofit_version = "2.9.0"
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"

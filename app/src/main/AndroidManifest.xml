@@ -41,6 +41,7 @@
         <activity android:name=".usecase.coroutines.usecase12.CalculationInSeveralCoroutinesActivity"/>
         <activity android:name=".usecase.coroutines.usecase13.ExceptionHandlingActivity"/>
         <activity android:name=".usecase.coroutines.usecase14.ContinueCoroutineWhenUserLeavesScreenActivity"/>
+        <activity android:name=".usecase.coroutines.usecase15.WorkManagerActivity"/>
     </application>
 
 </manifest>
