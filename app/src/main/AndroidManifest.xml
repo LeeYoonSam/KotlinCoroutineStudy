@@ -43,6 +43,7 @@
         <activity android:name=".usecase.coroutines.usecase14.ContinueCoroutineWhenUserLeavesScreenActivity"/>
         <activity android:name=".usecase.coroutines.usecase15.WorkManagerActivity"/>
         <activity android:name=".usecase.coroutines.usecase16.PerformanceAnalysisActivity"/>
+        <activity android:name=".usecase.coroutines.usecase17.PerformCalculationOnMainThreadActivity"/>
     </application>
 
 </manifest>
