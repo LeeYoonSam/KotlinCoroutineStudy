@@ -1,4 +1,4 @@
-# 1-3 취소와 타임아웃
+# 취소와 타임아웃
 https://dalinaum.github.io/coroutines-example/3
 
 ## Job에 대해 취소
