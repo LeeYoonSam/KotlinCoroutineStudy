@@ -4,7 +4,7 @@
 
 # 코루틴 디스패처
 
-- 코루틴의 여러 디스패처 `Default`, `IO`, `Unconfined`, `newSingleThreadContext`을 사용해봅시다.
+- 코루틴의 여러 디스패처 `Default`, `IO`, `Unconfined`, `newSingleThreadContext`을 사용해봅시다.
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -39,7 +39,7 @@ fun main() = runBlocking<Unit> {
 
 # async에서 코루틴 디스패처 사용
 
-- `launch`외에 `async`, `withContext`등의 코루틴 빌더에도 디스패처를 사용할 수 있습니다.
+- `launch`외에 `async`, `withContext`등의 코루틴 빌더에도 디스패처를 사용할 수 있습니다.
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -90,7 +90,7 @@ fun main() = runBlocking<Unit> {
 
 # 부모가 있는 Job과 없는 Job
 
-- 코루틴 스코프, 코루틴 컨텍스트는 구조화되어 있고 부모에게 계층적으로 되어 있습니다. 코루틴 컨텍스트의 `Job` 역시 부모에게 의존적입니다. 부모를 캔슬했을 때의 영향을 확인해보세요.
+- 코루틴 스코프, 코루틴 컨텍스트는 구조화되어 있고 부모에게 계층적으로 되어 있습니다. 코루틴 컨텍스트의 `Job` 역시 부모에게 의존적입니다. 부모를 캔슬했을 때의 영향을 확인해보세요.
 
 ```kotlin
 import kotlinx.coroutines.*
@@ -118,7 +118,7 @@ fun main() = runBlocking<Unit> {
 }
 ```
 
-- `job.cancelAndJoin()` 실행 후의 `delay`가 없다면 어떻게 될까요?
+- `job.cancelAndJoin()` 실행 후의 `delay`가 없다면 어떻게 될까요?
 
 # 부모의 마음
 
@@ -147,11 +147,11 @@ fun main() = runBlocking<Unit> {
 }
 ```
 
-- 부모를 `join` 해서 기다려 보면 부모는 두 자식이 모두 끝날 때까지 기다린다는 것을 알 수 있습니다.
+- 부모를 `join` 해서 기다려 보면 부모는 두 자식이 모두 끝날 때까지 기다린다는 것을 알 수 있습니다.
 
 # 코루틴 엘리먼트 결합
 
-- 여러 코루틴 엘리먼트를 한번에 사용할 수 있다. `+` 연산으로 엘리먼트를 합치면 된다. 합쳐진 엘리먼트들은 `coroutineContext[XXX]` 로 조회할 수 있다.
+- 여러 코루틴 엘리먼트를 한번에 사용할 수 있다. `+` 연산으로 엘리먼트를 합치면 된다. 합쳐진 엘리먼트들은 `coroutineContext[XXX]` 로 조회할 수 있다.
 
 ```kotlin
 import kotlin.system.*
