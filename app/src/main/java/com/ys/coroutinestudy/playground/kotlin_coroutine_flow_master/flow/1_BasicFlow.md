@@ -2,9 +2,11 @@
 
 [https://dalinaum.github.io/coroutines-example/8](https://dalinaum.github.io/coroutines-example/8)
 
+- 변화 추적이 쉬운 Flow
+
 ## 처음만나보는 플로우
 
-- Flow는 코틀린에서 쓸 수 있는 비동기 스트림입니다.
+- Flow는 코루틴으로 만들어진 코틀린에서 쓸 수 있는 비동기 스트림입니다.
 
 ```kotlin
 import kotlin.random.Random
