@@ -37,6 +37,7 @@ fun main() = runBlocking {
 - launch 부분에 에러 발생 - Suspension functions 은 오직 coroutine body 에서 호출을 해야 합니다.
     - doOneTwoThree 는 코루틴 바디가 없어서 에러가 발생합니다.
 
+
 # 코루틴 스코프
 
 - 코루틴 스코프를 만드는 다른 방법은 스코프 빌더를 이용하는 것입니다.
@@ -73,7 +74,7 @@ fun main() = runBlocking {
 ```
 
 - 코루틴 스코프는 `runBlocking` 썼을 때와 모양이 거의 비슷합니다.
-- 둘의 차이는 `runBlocking` 은 현재 쓰레드를 멈추게 만들고 기다리지만 `coroutineScope` 는 현재 스레드를 멈추게 하지 않습니다. 호출한 쪽이 `suspend` 되고 시간이 되면 다시 활동하게 됩니다.
+- 둘의 차이는 `runBlocking` 은 현재 스레드를 멈추게 만들고 기다리지만 `coroutineScope` 는 현재 스레드를 멈추게 하지 않습니다. 호출한 쪽이 `suspend` 되고 시간이 되면 다시 활동하게 됩니다.
 - `withContext`, `runBlocking` 가 일이 끝날때까지 스레드를 멈추게 만듭니다.
 
 # Job 을 이용한 제어
@@ -111,8 +112,8 @@ fun main() = runBlocking {
 }
 ```
 
-- `job.join()` → suspension point, 첫번째 런치 블럭이 끝날때까지 잠에서 깨어나서 다음 코드 호출
-    - `delay` 가 있어도 해당 `launch` 블럭 코드 실행이 끝나기 전까지 대 기를 합니다.
+- `job.join()` → suspension point, 첫번째 런치 블럭이 끝날때까지 잠들었다가 깨어나서 다음 코드를 호출
+    - `delay` 가 있어도 해당 `launch` 블럭 코드 실행이 끝나기 전까지 대기를 합니다.
 
 # 가벼운 코루틴
 
