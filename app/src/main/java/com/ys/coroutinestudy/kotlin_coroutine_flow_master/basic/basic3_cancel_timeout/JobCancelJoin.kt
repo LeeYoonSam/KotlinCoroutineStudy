@@ -1,13 +1,12 @@
-package com.ys.coroutinestudy.kotlin_coroutine_flow_master.basic.cancel_timeout
+package com.ys.coroutinestudy.kotlin_coroutine_flow_master.basic.basic3_cancel_timeout
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-// 취소가 불가능한 Job
-// launch(Dispatchers.Default) 는 그 다음 코드 블록을 다른 스레드에서 수행을 시킬 것입니다.
 private suspend fun doCount() = coroutineScope {
 	val job1 = launch(Dispatchers.Default) {
 		var i = 1
@@ -24,10 +23,12 @@ private suspend fun doCount() = coroutineScope {
 	}
 
 	delay(200L)
-	// 취소가 되지 않았다.
-	job1.cancel()
-
+	// job1.cancel()
+	// job1.join() // cancel 을 하고 실제 cancel 이 될때까지 대기
 	// job1 이 취소돈 종료든 다 끝난 이후에 doCount Done! 을 출력하고 싶다. -> cancel 과 join 활용
+
+	// `cancel`을 하고 `join`을 하는 일은 자주 일어나는 일이기 때문에 한번에 하는 `cancelAndJoin`이 준비되어 있습니다.
+	job1.cancelAndJoin()
 	println("doCount Done!")
 }
 

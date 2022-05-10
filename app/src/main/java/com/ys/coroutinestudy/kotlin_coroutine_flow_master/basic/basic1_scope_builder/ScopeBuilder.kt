@@ -1,4 +1,4 @@
-package com.ys.coroutinestudy.kotlin_coroutine_flow_master.basic.scope_builder
+package com.ys.coroutinestudy.kotlin_coroutine_flow_master.basic.basic1_scope_builder
 
 import com.ys.coroutinestudy.kotlin_coroutine_flow_master.getCurrentThreadName
 import com.ys.coroutinestudy.kotlin_coroutine_flow_master.printCurrentThreadName

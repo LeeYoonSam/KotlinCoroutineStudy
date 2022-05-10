@@ -1,6 +1,6 @@
 # 서스펜딩 함수
-
 [https://dalinaum.github.io/coroutines-example/4](https://dalinaum.github.io/coroutines-example/4)
+
 
 # suspend 함수들의 순차적인 수행
 
@@ -35,6 +35,7 @@ fun main() = runBlocking {
 - `import kotlin.system.*`는 `measureTimeMillis`를 위해 추가하였습니다.
 - 대략 2000ms 이상 수행된다는 것을 볼 수 있습니다.
 - 순차적으로 수행되었기 때문에 `getRandom1`이 1000ms 정도를 소비하고 `getRandom2`가 1000ms 정도 소비하는 것입니다.
+
 
 # async를 이용해 동시 수행하기
 
@@ -73,6 +74,7 @@ fun main() = runBlocking {
 - `async`, `await` 짝을 맞추는 것은 Microsoft .net C#의 영향으로 일반화되었는데 어떠한 키워드를 붙이지 않는 Go언어의 양향을 받아 가능한 제거하려 노력했다고 합니다. 그럼에도 불구하고 Java언어와의 호환성 때문에 `suspend`(`async`) 키워드는 버릴 수 없었습니다.
 - `await` 을 호출하면 잠들었다가 깨어나서 코드를 처리하게 됩니다.
 
+
 # async 게으르게 사용하기
 
 ```kotlin
@@ -105,6 +107,7 @@ fun main() = runBlocking {
 ```
 
 - `async` 키워드를 사용하는 순간 코드 블록이 수행을 준비하는데, `async(start = CoroutineStart.LAZY)`로 인자를 전달하면 우리가 원하는 순간 수행을 준비하게 할 수 있습니다. 이후 `start` 메서드를 이용해 수행을 준비하게 할 수 있습니다.
+
 
 # async를 사용한 구조적인 동시성
 

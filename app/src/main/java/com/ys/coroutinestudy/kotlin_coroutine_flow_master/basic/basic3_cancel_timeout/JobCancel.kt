@@ -1,4 +1,4 @@
-package com.ys.coroutinestudy.kotlin_coroutine_flow_master.basic.cancel_timeout
+package com.ys.coroutinestudy.kotlin_coroutine_flow_master.basic.basic3_cancel_timeout
 
 import com.ys.coroutinestudy.kotlin_coroutine_flow_master.getCurrentThreadName
 import kotlinx.coroutines.coroutineScope

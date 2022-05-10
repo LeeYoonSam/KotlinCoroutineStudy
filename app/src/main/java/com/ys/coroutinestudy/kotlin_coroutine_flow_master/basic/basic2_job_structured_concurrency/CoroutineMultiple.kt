@@ -1,9 +1,10 @@
-package com.ys.coroutinestudy.kotlin_coroutine_flow_master.basic.job_structured_concurrency
+package com.ys.coroutinestudy.kotlin_coroutine_flow_master.basic.basic2_job_structured_concurrency
 
 import kotlinx.coroutines.*
 
 /**
- * 코루틴 빌더 `launch`는 `Job` 객체를 반환하며 이를 통해 종료될 때까지 기다릴 수 있습니다.
+ * 코루틴은 협력적으로 동작하기 때문에 여러 코루틴을 만드는 것이 큰 비용이 들지 않습니다.
+ * 10만개의 간단한 일을 하는 코루틴도 큰 부담은 아닙니다.
  */
 private suspend fun doOneTwoThree() = coroutineScope {
 	val job = launch {
@@ -19,10 +20,12 @@ private suspend fun doOneTwoThree() = coroutineScope {
 		println("1!")
 	}
 
-	launch {
-		println("launch3: ${Thread.currentThread().name}")
-		delay(500L)
-		println("2!")
+	repeat(100000) {
+		launch {
+			println("launch3: ${Thread.currentThread().name}")
+			delay(500L)
+			println("2!")
+		}
 	}
 	println("4!")
 }

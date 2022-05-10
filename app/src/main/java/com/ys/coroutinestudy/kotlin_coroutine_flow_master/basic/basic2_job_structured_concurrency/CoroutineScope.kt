@@ -1,4 +1,4 @@
-package com.ys.coroutinestudy.kotlin_coroutine_flow_master.basic.job_structured_concurrency
+package com.ys.coroutinestudy.kotlin_coroutine_flow_master.basic.basic2_job_structured_concurrency
 
 import kotlinx.coroutines.*
 
