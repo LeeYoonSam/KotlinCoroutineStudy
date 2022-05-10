@@ -23,6 +23,7 @@ private suspend fun doCount() = coroutineScope {
 	}
 
 	delay(200L)
+
 	// job1.cancel()
 	// job1.join() // cancel 을 하고 실제 cancel 이 될때까지 대기
 	// job1 이 취소돈 종료든 다 끝난 이후에 doCount Done! 을 출력하고 싶다. -> cancel 과 join 활용
