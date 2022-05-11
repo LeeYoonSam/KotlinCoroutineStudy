@@ -11,7 +11,7 @@ import kotlinx.coroutines.*
 
 fun main() = runBlocking<Unit> {
     launch {
-        println("부모의 콘텍스트 / ${Thread.currentThread().name}")
+        println("부모의 컨텍스트 / ${Thread.currentThread().name}")
     }
 
     launch(Dispatchers.Default) {
@@ -166,7 +166,7 @@ fun main() = runBlocking<Unit> {
             delay(5000L)
         }
 
-        launch(Dispatchers.Default + CoroutineName("launch1")) {
+        launch(Dispatchers.Default + CoroutineName("launch2")) {
             println("launch2: ${Thread.currentThread().name}")
             println(coroutineContext[CoroutineDispatcher])
             println(coroutineContext[CoroutineName])
