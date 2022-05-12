@@ -35,8 +35,8 @@ fun main() = runBlocking {
 }
 ```
 
-- `withContext`는 수행이 완료될 때 까지 기다리는 코루틴 빌더입니다. 뒤의 `println("Counter = $counter")` 부분은 잠이 들었다 `withContext` 블록의 코드가 모두 수행되면 깨어나 호출됩니다.
-- 위의 코드는 불행히도 항상 `100000`이 되는 것은 아닙니다. `Dispatchers.Default`에 의해 코루틴이 어떻게 할당되냐에 따라 값이 달라집니다.
+- `withContext`는 수행이 완료될 때 까지 기다리는 코루틴 빌더입니다. 뒤의 `println("Counter = $counter")` 부분은 잠이 들었다 `withContext` 블록의 코드가 모두 수행되면 깨어나 호출됩니다.
+- 위의 코드는 불행히도 항상 `100000`이 되는 것은 아닙니다. `Dispatchers.Default`에 의해 코루틴이 어떻게 할당되냐에 따라 값이 달라집니다.
 
 ## volatile 을 적용하기
 
@@ -221,9 +221,9 @@ object IncCounter : CounterMsg()
 class GetCounter(val response: CompletableDeferred<Int>) : CounterMsg()
 ```
 
-1. 실드(sealed) 클래스는 외부에서 확장이 불가능한 클래스이다. `CounterMsg`는 `IncCounter`와 `GetCounter` 두 종류로 한정됩니다.
+1. 실드(sealed) 클래스는 외부에서 확장이 불가능한 클래스이다. `CounterMsg`는 `IncCounter`와 `GetCounter` 두 종류로 한정됩니다.
 2. `IncCounter`는 싱글톤으로 인스턴스를 만들 수 없습니다. 액터에게 값을 증가시키기 위한 신호로 쓰입니다.
-3. `GetCounter`는 값을 가져올 때 쓰며 `CompletableDeferred<Int>`를 이용해 값을 받아옵니다.
+3. `GetCounter`는 값을 가져올 때 쓰며 `CompletableDeferred<Int>`를 이용해 값을 받아옵니다.
 
 ```kotlin
 fun CoroutineScope.counterActor() = actor<CounterMsg> {
@@ -239,7 +239,7 @@ fun CoroutineScope.counterActor() = actor<CounterMsg> {
 ```
 
 - `channel` : 한쪽에서 데이터를 보내고 다른 한쪽에서 데이터를 받을수 있는 것입니다.
-- 채널은 송신 측에서 값을 `send`할 수 있고 수신 측에서 `receive`를 할 수 있는 도구입니다. 3부와 4부에서 채널에 대해 상세히 다루겠습니다.
+- 채널은 송신 측에서 값을 `send`할 수 있고 수신 측에서 `receive`를 할 수 있는 도구입니다. 3부와 4부에서 채널에 대해 상세히 다루겠습니다.
 
 ```kotlin
 import kotlinx.coroutines.*
