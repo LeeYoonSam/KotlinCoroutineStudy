@@ -3,7 +3,7 @@
 
 ## 수집기 측에서 예외처리하기
 
-- 예외는 `collect`을 하는 수집기 측에서도 try-catch 식을 이용해 할 수 있습니다.
+- 예외는 `collect`을 하는 수집기 측에서도 try-catch 식을 이용 할 수 있습니다.
 
 ```kotlin
 import kotlinx.coroutines.*
