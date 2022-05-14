@@ -45,5 +45,5 @@ fun main() = runBlocking<Unit> { // this: 코루틴 스코프, 코루틴
 [Kotlin Playground - launchIn](https://pl.kotl.in/lxgNfA_DE)
 
 - `launchIn`
-    - 계속 이벤트가 발생해서 추적을 하면서 대응하려면 `launchIn` 을 통해서  다른 코루틴에서 우리 이벤트를 감시할 것을 동작을 시켜야 하는것
+    - 계속 이벤트가 발생해서 추적을 하면서 대응하려면 `launchIn` 을 통해서 다른 코루틴에서 우리 이벤트를 감시할 것을 동작을 시켜야 하는것
     - 이벤트와 같이 상태가 바뀌는것을 추적할 때는 launchIn 을 통해서 다른 코루틴에서 관측하는 것이 더 유리합니다.
