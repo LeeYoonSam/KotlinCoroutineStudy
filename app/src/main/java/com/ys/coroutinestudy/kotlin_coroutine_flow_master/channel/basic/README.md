@@ -30,7 +30,7 @@ fun main() = runBlocking<Unit> {
 
 [Kotlin Playground](https://pl.kotl.in/iqYrJ-vjN)
 
-- `Channle.send()` 에서 받는 사람이 없으면 잠이 들었다가 받은 이후에 깨어나서 다음 데이터를 보냅니다.
+- `Channel.send()` 에서 받는 사람이 없으면 잠이 들었다가 받은 이후에 깨어나서 다음 데이터를 보냅니다.
 - `Channel.receive()` 데이터가 없는 경우에는 잠이 들었다가 데이터가 들어온 이후에 깨어나서 수행합니다.
 - `trySend`, `tryReceive` 는 suspension point 가 없기 때문에 기다리지 않는 함수라고 볼 수 있고 특별한 경우에만 사용합니다.
 
