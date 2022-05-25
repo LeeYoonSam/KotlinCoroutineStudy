@@ -4,7 +4,6 @@ import com.ys.coroutinestudy.coroutine_sample.future.await
 import com.ys.coroutinestudy.coroutine_sample.future.future
 import com.ys.coroutinestudy.coroutine_sample.util.log
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.coroutines.runBlocking
 
 fun main() = runBlocking(CommonPool) {

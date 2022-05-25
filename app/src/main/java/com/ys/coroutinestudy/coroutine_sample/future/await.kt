@@ -16,6 +16,5 @@ suspend fun <T> CompletableFuture<T>.await(): T =
 			} else {
 				continuation.resumeWithException(exception)
 			}
-
 		}
 	}
