@@ -1,6 +1,6 @@
 package com.ys.coroutinestudy.coroutine_sample.context
 
-import kotlinx.coroutines.runBlocking
+import com.ys.coroutinestudy.coroutine_sample.run.runBlocking
 import kotlin.coroutines.coroutineContext
 
 suspend fun doSomeThing() {
