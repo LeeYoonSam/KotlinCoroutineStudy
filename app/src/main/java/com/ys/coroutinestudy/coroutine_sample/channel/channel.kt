@@ -83,6 +83,7 @@ class Channel<T>(val capacity: Int = 1) : SendChannel<T>, ReceiveChannel<T> {
 		return true
 	}
 
+	@Suppress("UNCHECKED_CAST")
 	override suspend fun receive(): T = suspendCoroutine sc@ { continuation ->
 		var sendWaiter: Waiter<T>? = null
 		var wasClosed = false
@@ -250,7 +251,7 @@ class Channel<T>(val capacity: Int = 1) : SendChannel<T>, ReceiveChannel<T> {
 	private fun unlinkFirstWaiter(): Waiter<T>? {
 		val first = waiters.next!!
 		if (first == waiters) return null
-		first.unlinkOne()
+		first.unlink()
 		return first
 	}
 
