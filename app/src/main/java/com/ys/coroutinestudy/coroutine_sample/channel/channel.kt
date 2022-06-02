@@ -61,25 +61,25 @@ class Channel<T>(val capacity: Int = 1) : SendChannel<T>, ReceiveChannel<T> {
 		continuation.resume(Unit) // sent -> 이 코루틴을 즉시 재개
 	}
 
-	override fun <R> selectSend(sendCase: SendCase<T, R>): Boolean {
+	override fun <R> selectSend(a: SendCase<T, R>): Boolean {
 		var receiveWaiter: Waiter<T>? = null
 		locked {
-			if (sendCase.selector.resolved) return true // 이미 해결된 셀렉터, 아무작업 하지 않음
+			if (a.selector.resolved) return true // 이미 해결된 셀렉터, 아무작업 하지 않음
 			check(!closed) { CHANNEL_CLOSED }
 			if (full) {
-				addWaiter(sendCase)
+				addWaiter(a)
 				return false // suspended
 			} else {
 				receiveWaiter = unlinkFirstWaiter()
 				if (receiveWaiter == null) {
-					buffer.add(sendCase.value)
+					buffer.add(a.value)
 				}
 			}
-			sendCase.unlink()
+			a.unlink()
 		}
 
-		receiveWaiter?.resumeReceive(sendCase.value)
-		sendCase.resumeSend() // sent -> 이 코루틴을 즉시 재개
+		receiveWaiter?.resumeReceive(a.value)
+		a.resumeSend() // sent -> 이 코루틴을 즉시 재개
 		return true
 	}
 
@@ -196,6 +196,7 @@ class Channel<T>(val capacity: Int = 1) : SendChannel<T>, ReceiveChannel<T> {
 		override suspend fun next(): T {
 			// hasNext가 이전에 획득한 값을 반환
 			if (computedNext) {
+				@Suppress("UNCHECKED_CAST")
 				val result = nextValue as T
 				computedNext = false
 				nextValue = null
@@ -298,7 +299,7 @@ sealed class Waiter<T> {
 		val prev = this.prev!!
 		val next = this.next!!
 		prev.next = next
-		next.next = prev
+		next.prev = prev
 		this.prev = null
 		this.next = null
 	}

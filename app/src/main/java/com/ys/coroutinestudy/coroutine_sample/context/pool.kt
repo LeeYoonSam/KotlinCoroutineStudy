@@ -1,12 +1,14 @@
 package com.ys.coroutinestudy.coroutine_sample.context
 
-import android.os.Build.VERSION_CODES
-import androidx.annotation.RequiresApi
+import android.annotation.SuppressLint
 import com.ys.coroutinestudy.coroutine_sample.run.launch
 import java.util.concurrent.ForkJoinPool
-import kotlin.coroutines.*
+import kotlin.coroutines.AbstractCoroutineContextElement
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.ContinuationInterceptor
+import kotlin.coroutines.CoroutineContext
 
-@RequiresApi(VERSION_CODES.N)
+@SuppressLint("NewApi")
 object CommonPool : Pool(ForkJoinPool.commonPool())
 
 open class Pool(private val pool: ForkJoinPool) : AbstractCoroutineContextElement(ContinuationInterceptor),
