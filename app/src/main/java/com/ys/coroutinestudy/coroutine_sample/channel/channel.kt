@@ -379,7 +379,7 @@ class ReceiveCase<T, R>(val c: ReceiveChannel<T>, val action: (T) -> R) : Select
 	override fun select(selector: Selector<R>): Boolean = c.selectReceive(this)
 }
 
-class DefaultCase<R>(val action: suspend () -> R) : SelectCase<Nothing, R>() {
+class DefaultCase<R>(private val action: suspend () -> R) : SelectCase<Nothing, R>() {
 	override fun select(selector: Selector<R>): Boolean {
 		locked {
 			if (selector.resolved) return true // 이미 해결된 셀렉터, 아무작업 하지 않음
