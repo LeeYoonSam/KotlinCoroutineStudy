@@ -25,7 +25,8 @@ suspend fun boring(msg: String): ReceiveChannel<String> {
 fun main() = mainBlocking {
 	val joe = boring("Joe")
 	val ann = boring("Ann")
-	for (i in 0..4) {
+
+	repeat(5) {
 		println(joe.receive())
 		println(ann.receive())
 	}
