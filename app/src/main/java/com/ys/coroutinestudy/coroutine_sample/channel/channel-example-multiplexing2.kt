@@ -6,14 +6,12 @@ private suspend fun fanIn(input1: ReceiveChannel<String>, input2: ReceiveChannel
 	val channel = Channel<String>()
 
 	go {
-		for (v in input1) {
-			channel.send(v)
-		}
-	}
-
-	go {
-		for (v in input2) {
-			channel.send(v)
+		while (true) {
+			val s = select<String> {
+				input1.onReceive { it }
+				input2.onReceive { it }
+			}
+			channel.send(s)
 		}
 	}
 
