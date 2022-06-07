@@ -1,4 +1,4 @@
-package com.ys.coroutinestudy.suspendingSequence
+package com.ys.coroutinestudy.coroutine_sample.suspendingSequence
 
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.CoroutineContext

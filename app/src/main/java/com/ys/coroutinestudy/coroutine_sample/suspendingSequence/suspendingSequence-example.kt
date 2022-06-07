@@ -1,4 +1,4 @@
-package com.ys.coroutinestudy.suspendingSequence
+package com.ys.coroutinestudy.coroutine_sample.suspendingSequence
 
 import com.ys.coroutinestudy.coroutine_sample.context.newSingleThreadContext
 import com.ys.coroutinestudy.coroutine_sample.delay.delay
