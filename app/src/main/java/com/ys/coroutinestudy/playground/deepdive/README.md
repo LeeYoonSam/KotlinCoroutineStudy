@@ -300,7 +300,7 @@ suspend fun coroutineDemoSequenceAsyncReturnApiCall3(s1: String, s2: String):Str
 ## Conclusions
 코루틴은 여러 백그라운드 프로세스를 수행하는 매우 쉽고 효율적인 방법을 제공합니다.</br>
 
-1. suspend me 함수의 코드는 순차적으로 실행됩니다. 제어가 다음 작업으로 이동한 후 한 작업이 완료될 때까지 대기합니다.
+1. suspend 함수의 코드는 순차적으로 실행됩니다. 제어가 다음 작업으로 이동한 후 한 작업이 완료될 때까지 대기합니다.
 
 ```kotlin
 suspend fun singleCoroutineDemo() {
