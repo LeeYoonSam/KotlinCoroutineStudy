@@ -2,7 +2,7 @@
 
 Flow API in Kotlin Series
 - [Mastering Flow API in Kotlin](./series1)
-- Creating Flow Using Flow Builder in Kotlin
+- [Creating Flow Using Flow Builder in Kotlin](./series2)
 - Terminal Operators in Kotlin Flow
 - Cold Flow vs Hot Flow
 - StateFlow and SharedFlow
